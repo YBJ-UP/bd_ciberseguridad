@@ -133,3 +133,9 @@ CREATE TABLE honeypot_status (          -- una fila por honeypot
   last_heartbeat_at timestamptz, last_event_at timestamptz,
   state text NOT NULL                   -- 'online' | 'silent' | 'compromised'
 );
+
+CREATE TABLE dashboard_users (
+  id SERIAL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL
+);
