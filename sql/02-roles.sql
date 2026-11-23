@@ -35,3 +35,23 @@ GRANT UPDATE (last_heartbeat_at, last_event_at, state) ON honeypot_status TO ing
 
 -- Solo lectura de configuración
 GRANT SELECT ON honeypots, agent_tokens, detection_rules, honeytokens TO ingest;
+
+-- Vigilante de heartbeats + notificaciones a Telegram
+CREATE ROLE notifier LOGIN ...;
+GRANT SELECT ON honeypot_status, alerts, detection_rules TO notifier;
+GRANT SELECT (id, event_type, occurred_at, honeypot_id) ON events TO notifier;
+GRANT UPDATE (notified_at, notify_status) ON alerts TO notifier;
+GRANT UPDATE (state) ON honeypot_status TO notifier;
+
+-- Consultas del front: todo menos el secreto
+CREATE ROLE query LOGIN ...;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO query;
+REVOKE SELECT ON auth_attempts FROM query;
+GRANT SELECT (event_id, service, username, key_fingerprint, success)
+  ON auth_attempts TO query;
+GRANT UPDATE (acknowledged_at) ON alerts TO query;
+
+-- Analítica de python: solo lectura, idealmente sobre vistas sin `secret`
+CREATE ROLE analytics LOGIN ...;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO analytics;
+REVOKE SELECT ON auth_attempts FROM analytics;
