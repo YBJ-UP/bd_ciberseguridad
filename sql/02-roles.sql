@@ -11,7 +11,7 @@ GRANT USAGE ON SCHEMA public TO ingest;
 -- Inserción pura (las columnas identity no requieren permisos de secuencia)
 GRANT INSERT ON
   events, auth_attempts, commands, file_accesses, http_requests,
-  sql_statements, rejected_events, heartbeats, alerts, honeytoken_hits
+  sql_statements, heartbeats, alerts, honeytoken_hits
 TO ingest;
 
 -- Si usas INSERT ... RETURNING id, necesitas leer solo esa columna
@@ -19,7 +19,7 @@ GRANT SELECT (id) ON events TO ingest;
 
 -- Sesiones: insertar, localizar para correlacionar y completar campos concretos
 GRANT INSERT ON sessions TO ingest;
-GRANT SELECT (id, honeypot_id, boot_id, session_ref, key_fingerprint,
+GRANT SELECT (id, honeypot_id, key_fingerprint,
               started_at, ended_at, kind) ON sessions TO ingest;
 GRANT UPDATE (ended_at, parent_session_id, attacker_ip_id) ON sessions TO ingest;
 
